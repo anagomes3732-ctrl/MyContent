@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Mycontent - Caderninho Inteligente de Estudos</title>
+​<!-- Google Fonts: Plus Jakarta Sans -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+​<style>
+/* ==========================================================================
+VARIABLES & THEME CONFIGURATION
+========================================================================== */
+:root {
+--bg-app: #F7F5FA;
+--bg-card: #FFFFFF;
+--primary: #8A65C8;
+--primary-light: #D8C7F0;
+--primary-subtle: #F0EAFA;
+--primary-dark: #6B42A8;
+--text-main: #2D2738;
+--text-muted: #787186;
+--text-light: #A39DB0;
+--border-color: #EAE5F2;
+--shadow-sm: 0 4px 12px rgba(138, 101, 200, 0.06);
+--shadow-md: 0 8px 24px rgba(138, 101, 200, 0.1);
+--shadow-3d: 0 10px 0 0 #C1B0DE, 0 12px 20px rgba(138, 101, 200, 0.15);
+--radius-sm: 12px;
+--radius-md: 18px;
+--radius-lg: 24px;
+--radius-full: 9999px;
+--transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+--safe-area-bottom: env(safe-area-inset-bottom, 0px);
+--safe-area-top: env(safe-area-inset-top, 0px);
+}
+​[data-theme="dark"] {
+--bg-app: #13111A;
+--bg-card: #1E1A29;
+--primary: #A280E0;
+--primary-light: #3D3254;
+--primary-subtle: #292238;
+--primary-dark: #C2A5F8;
+--text-main: #F3F0F8;
+--text-muted: #A8A1B5;
+--text-light: #6E677E;
+--border-color: #2D273D;
+--shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.2);
+--shadow-md: 0 8px 24px rgba(0, 0, 0, 0.3);
+--shadow-3d: 0 8px 0 0 #2A213D, 0 12px 20px rgba(0, 0, 0, 0.4);
+}
+​/* Pastel Colors Palette */
+.color-pink { --subject-color: #F8BBD0; --subject-color-bg: #FDF2F5; --subject-color-dark: #C2185B; }
+.color-lilas { --subject-color: #D8C7F0; --subject-color-bg: #F4F0FA; --subject-color-dark: #6B42A8; }
+.color-blue { --subject-color: #B3E5FC; --subject-color-bg: #F0F9FF; --subject-color-dark: #0288D1; }
+.color-sage { --subject-color: #C8E6C9; --subject-color-bg: #F2F9F3; --subject-color-dark: #388E3C; }
+.color-peach { --subject-color: #FFE0B2; --subject-color-bg: #FFF8F0; --subject-color-dark: #F57C00; }
+.color-butter { --subject-color: #FFF9C4; --subject-color-bg: #FFFFF2; --subject-color-dark: #FBC02D; }
+.color-coral { --subject-color: #FFCCBC; --subject-color-bg: #FFF5F2; --subject-color-dark: #E64A19; }
+.color-beige { --subject-color: #E1D5C9; --subject-color-bg: #F9F6F3; --subject-color-dark: #795548; }
+.color-slate { --subject-color: #CFD8DC; --subject-color-bg: #F4F6F7; --subject-color-dark: #455A64; }
+​/* ==========================================================================
+RESET & BASE STYLES
+========================================================================== */
+* {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+-webkit-tap-highlight-color: transparent;
+font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+​body, html {
+background-color: var(--bg-app);
+color: var(--text-main);
+height: 100%;
+width: 100%;
+overflow-x: hidden;
+position: fixed;
+user-select: none;
+}
+​/* Main Container with App constraints */
+#app-container {
+max-width: 480px;
+margin: 0 auto;
+height: 100%;
+display: flex;
+flex-direction: column;
+position: relative;
+background-color: var(--bg-app);
+box-shadow: 0 0 40px rgba(0,0,0,0.05);
+overflow: hidden;
+}
+​/* Content View Area */
+.view-container {
+flex: 1;
+overflow-y: auto;
+overflow-x: hidden;
+padding: calc(var(--safe-area-top) + 20px) 20px calc(var(--safe-area-bottom) + 90px) 20px;
+display: none;
+opacity: 0;
+transition: opacity var(--transition-fast);
+-webkit-overflow-scrolling: touch;
+}
+​.view-container.active {
+display: block;
+opacity: 1;
+}
+​/* Headings & Typography */
+h1 { font-size: 24px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
+h2 { font-size: 18px; font-weight: 700; color: var(--text-main); }
+h3 { font-size: 15px; font-weight: 600; color: var(--text-main); }
+p { font-size: 14px; color: var(--text-muted); line-height: 1.5; }
+​/* ==========================================================================
+UI COMPONENTS & BUTTONS
+========================================================================== */
+.btn {
+width: 100%;
+padding: 16px 24px;
+border-radius: var(--radius-md);
+border: none;
+font-size: 15px;
+font-weight: 700;
+cursor: pointer;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 10px;
+transition: transform 0.1s ease, box-shadow 0.2s ease, background 0.2s;
+}
+​.btn:active {
+transform: scale(0.98);
+}
+​.btn-primary {
+background: var(--primary);
+color: #FFFFFF;
+box-shadow: 0 6px 18px rgba(138, 101, 200, 0.3);
+}
+​.btn-secondary {
+background: var(--primary-subtle);
+color: var(--primary-dark);
+}
+​.btn-outline {
+background: transparent;
+border: 1.5px solid var(--border-color);
+color: var(--text-main);
+}
+​.btn-danger {
+background: #FFE5E5;
+color: #D32F2F;
+}
+​/* Card Component */
+.card {
+background: var(--bg-card);
+border-radius: var(--radius-md);
+padding: 18px;
+margin-bottom: 14px;
+border: 1px solid var(--border-color);
+box-shadow: var(--shadow-sm);
+transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+position: relative;
+}
+​.card:active {
+transform: translateY(-2px);
+}
+​/* Notebook Graphic / Logo element */
+.notebook-icon {
+width: 70px;
+height: 85px;
+background: #FFFFFF;
+border-radius: 12px 18px 18px 12px;
+position: relative;
+box-shadow: var(--shadow-3d);
+border: 2px solid #E2D9F3;
+display: flex;
+align-items: center;
+justify-content: center;
+margin: 0 auto;
+}
+​.notebook-icon::before {
+content: '';
+position: absolute;
+left: 6px;
+top: 0;
+bottom: 0;
+width: 3px;
+background: #E0D7F0;
+border-radius: 2px;
+box-shadow: 6px 0 0 #E0D7F0;
+}
+​.notebook-icon .bookmark {
+width: 14px;
+height: 28px;
+background: var(--primary);
+position: absolute;
+top: 0;
+right: 12px;
+border-radius: 0 0 4px 4px;
+}
+​/* Custom Progress Bar */
+.progress-bar-container {
+width: 100%;
+height: 10px;
+background: var(--primary-subtle);
+border-radius: var(--radius-full);
+overflow: hidden;
+position: relative;
+margin: 10px 0;
+}
+​.progress-bar-fill {
+height: 100%;
+background: var(--primary);
+border-radius: var(--radius-full);
+transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+​/* Forms & Inputs */
+.form-group {
+margin-bottom: 20px;
+}
+​.form-label {
+display: block;
+font-size: 13px;
+font-weight: 700;
+margin-bottom: 8px;
+color: var(--text-muted);
+text-transform: uppercase;
+letter-spacing: 0.5px;
+}
+​.form-input {
+width: 100%;
+padding: 16px;
+border-radius: var(--radius-md);
+border: 1.5px solid var(--border-color);
+background: var(--bg-card);
+color: var(--text-main);
+font-size: 15px;
+outline: none;
+transition: border-color var(--transition-fast);
+}
+​.form-input:focus {
+border-color: var(--primary);
+}
+​/* Color Picker Palette */
+.color-picker-grid {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 12px;
+margin-top: 10px;
+}
+​.color-option {
+height: 48px;
+border-radius: var(--radius-sm);
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+border: 2px solid transparent;
+transition: transform 0.2s, border-color 0.2s;
+}
+​.color-option.selected {
+border-color: var(--primary);
+transform: scale(1.05);
+}
+​.color-option-dot {
+width: 20px;
+height: 20px;
+border-radius: 50%;
+}
+​/* Header Nav Bar */
+.header-nav {
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin-bottom: 24px;
+}
+​.header-nav .title {
+font-size: 20px;
+font-weight: 800;
+}
+​.icon-btn {
+width: 40px;
+height: 40px;
+border-radius: var(--radius-full);
+background: var(--bg-card);
+border: 1px solid var(--border-color);
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+color: var(--text-main);
+}
+​/* Checkbox Custom Style */
+.step-item {
+display: flex;
+align-items: center;
+padding: 14px;
+background: var(--bg-card);
+border: 1px solid var(--border-color);
+border-radius: var(--radius-sm);
+margin-bottom: 8px;
+cursor: pointer;
+transition: background 0.2s;
+}
+​.step-item:active {
+background: var(--primary-subtle);
+}
+​.custom-checkbox {
+width: 24px;
+height: 24px;
+border-radius: 8px;
+border: 2px solid var(--text-light);
+margin-right: 14px;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: all 0.2s ease;
+flex-shrink: 0;
+}
+​.step-item.checked .custom-checkbox {
+background: var(--primary);
+border-color: var(--primary);
+}
+​.step-item.checked .custom-checkbox::after {
+content: '✓';
+color: #FFF;
+font-weight: bold;
+font-size: 14px;
+}
+​.step-item.checked .step-text {
+color: var(--text-muted);
+text-decoration: line-through;
+}
+​.step-text {
+font-size: 14px;
+font-weight: 600;
+color: var(--text-main);
+}
+​/* Bottom Navigation Bar */
+#bottom-nav {
+position: absolute;
+bottom: 0;
+left: 0;
+right: 0;
+height: calc(65px + var(--safe-area-bottom));
+padding-bottom: var(--safe-area-bottom);
+background: var(--bg-card);
+border-top: 1px solid var(--border-color);
+display: flex;
+justify-content: space-around;
+align-items: center;
+z-index: 100;
+}
+​.nav-item {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+color: var(--text-light);
+font-size: 10px;
+font-weight: 700;
+text-decoration: none;
+cursor: pointer;
+width: 25%;
+height: 100%;
+gap: 4px;
+transition: color 0.2s;
+}
+​.nav-item svg {
+width: 22px;
+height: 22px;
+fill: currentColor;
+}
+​.nav-item.active {
+color: var(--primary);
+}
+​/* Modals & Popups */
+.modal-overlay {
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: rgba(0, 0, 0, 0.4);
+backdrop-filter: blur(4px);
+z-index: 200;
+display: flex;
+align-items: flex-end;
+opacity: 0;
+pointer-events: none;
+transition: opacity 0.2s ease;
+}
+​.modal-overlay.active {
+opacity: 1;
+pointer-events: auto;
+}
+​.modal-card {
+width: 100%;
+background: var(--bg-card);
+border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+padding: 24px;
+padding-bottom: calc(24px + var(--safe-area-bottom));
+transform: translateY(100%);
+transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+max-height: 85vh;
+overflow-y: auto;
+}
+​.modal-overlay.active .modal-card {
+transform: translateY(0);
+}
+​.modal-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 20px;
+}
+​/* Empty States */
+.empty-state {
+text-align: center;
+padding: 40px 20px;
+}
+​.empty-state .notebook-icon {
+margin-bottom: 20px;
+transform: scale(0.9);
+}
+​/* Celebrations & Badges */
+.badge {
+display: inline-block;
+padding: 4px 8px;
+border-radius: 6px;
+font-size: 11px;
+font-weight: 700;
+text-transform: uppercase;
+background: var(--primary-subtle);
+color: var(--primary-dark);
+}
+​/* Search Bar */
+.search-box {
+position: relative;
+margin-bottom: 20px;
+}
+​.search-box input {
+padding-left: 44px;
+}
+​.search-box .search-icon {
+position: absolute;
+left: 16px;
+top: 50%;
+transform: translateY(-50%);
+color: var(--text-light);
+}
+​/* Animations */
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+​.animate-fade {
+animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+​/* Success Banner Indicator */
+.completion-banner {
+background: #E8F5E9;
+color: #2E7D32;
+border-radius: var(--radius-sm);
+padding: 12px;
+text-align: center;
+font-size: 13px;
+font-weight: 700;
+margin-top: 10px;
+display: none;
+animation: fadeIn 0.3s forwards;
+}
+​.completion-banner.active {
+display: block;
+}
+</style>
+</head>
+<body>
+​<div id="app-container">
+​<!-- ==========================================================================
+VIEW 1: SPLASH SCREEN
+========================================================================== -->
+<div id="view-splash" class="view-container active" style="background: var(--primary-light); display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+<div class="notebook-icon animate-fade" style="width: 90px; height: 110px;">
+<div class="bookmark"></div>
+</div>
+<h1 style="color: var(--primary-dark); margin-top: 24px; font-size: 28px;" class="animate-fade">Mycontent</h1>
+<p style="color: var(--primary-dark); opacity: 0.7; font-weight: 600;" class="animate-fade">Caderninho Inteligente</p>
+</div>
+​<!-- ==========================================================================
+VIEW 2: WELCOME SCREEN
+========================================================================== -->
+<div id="view-welcome" class="view-container">
+<div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between; padding-top: 40px; padding-bottom: 20px;">
+<div style="text-align: center;">
+<div class="notebook-icon" style="margin-bottom: 30px;">
+<div class="bookmark"></div>
+</div>
+<h1 style="margin-bottom: 12px;">Seu estudo.
+Do seu jeito.</h1>
+<p>Organize seus conteúdos, acompanhe seu progresso e veja o quanto você já avançou.</p>
+</div>
+<button class="btn btn-primary" onclick="app.navigateTo('view-create-goal')">Começar</button>
+</div>
+</div>
+​<!-- ==========================================================================
+VIEW 3: CREATE GOAL
+========================================================================== -->
+<div id="view-create-goal" class="view-container">
+<div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+<div>
+<div class="header-nav">
+<div class="title">Novo Objetivo</div>
+</div>
+<h2>O que você está estudando?</h2>
+<p style="margin-bottom: 24px;">Dê um nome para sua jornada de estudos.</p>
+<div class="form-group">
+<label class="form-label">Nome do objetivo</label>
+<input type="text" id="goal-input" class="form-input" placeholder="Ex: Concurso PRF, ENEM 2027..." autofocus>
+</div>
+</div>
+<button class="btn btn-primary" onclick="app.saveGoal()">Continuar</button>
+</div>
+</div>
+​<!-- ==========================================================================
+VIEW 4: HOME (INÍCIO)
+========================================================================== -->
+<div id="view-home" class="view-container">
+<!-- Top Target Badge -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+<div>
+<span class="badge">Meu Objetivo</span>
+<h2 id="home-goal-name" style="font-size: 20px; margin-top: 2px;">🎯 Concurso PRF</h2>
+</div>
+<button class="icon-btn" onclick="app.openEditGoalModal()">✏️</button>
+</div>
+​<!-- Overall Progress Card -->
+<div class="card" style="background: linear-gradient(135deg, var(--bg-card) 0%, var(--primary-subtle) 100%);">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
+<div>
+<span style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Seu Progresso</span>
+<div id="home-overall-percentage" style="font-size: 32px; font-weight: 800; color: var(--primary-dark);">0%</div>
+</div>
+</div>
+<div class="progress-bar-container">
+<div id="home-overall-bar" class="progress-bar-fill" style="width: 0%;"></div>
+</div>
+<div style="display: flex; justify-content: space-between; margin-top: 14px; text-align: center;">
+<div>
+<div id="stat-total" style="font-weight: 800; font-size: 16px;">0</div>
+<div style="font-size: 11px; color: var(--text-muted);">Conteúdos</div>
+</div>
+<div>
+<div id="stat-completed" style="font-weight: 800; font-size: 16px; color: #2E7D32;">0</div>
+<div style="font-size: 11px; color: var(--text-muted);">Concluídos</div>
+</div>
+<div>
+<div id="stat-in-progress" style="font-weight: 800; font-size: 16px; color: #EF6C00;">0</div>
+<div style="font-size: 11px; color: var(--text-muted);">Em andamento</div>
+</div>
+</div>
+</div>
+​<!-- Subjects Section -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin: 24px 0 14px 0;">
+<h2>Minhas disciplinas</h2>
+<button class="btn btn-secondary" style="width: auto; padding: 8px 14px; font-size: 13px;" onclick="app.navigateTo('view-create-subject')">+ Adicionar</button>
+</div>
+​<div id="home-subjects-list">
+<!-- Subject cards generated dynamically -->
+</div>
+</div>
+​<!-- ==========================================================================
+VIEW 5: DISCIPLINAS LIST
+========================================================================== -->
+<div id="view-subjects" class="view-container">
+<div class="header-nav">
+<div class="title">Minhas disciplinas</div>
+<button class="icon-btn" onclick="app.navigateTo('view-create-subject')">+</button>
+</div>
+​<div id="all-subjects-list">
+<!-- Subject cards generated dynamically -->
+</div>
+</div>
+​<!-- ==========================================================================
+VIEW 6: CREATE/EDIT DISCIPLINA
+========================================================================== -->
+<div id="view-create-subject" class="view-container">
+<div class="header-nav">
+<button class="icon-btn" onclick="app.goBack()">←</button>
+<div class="title" id="subject-form-title">Nova disciplina</div>
+<div style="width: 40px;"></div>
+</div>
+​<div class="form-group">
+<label class="form-label">Nome da disciplina</label>
+<input type="text" id="subject-name-input" class="form-input" placeholder="Ex: Legislação de Trânsito">
+</div>
+​<div class="form-group">
+<label class="form-label">Escolha uma cor</label>
+<div class="color-picker-grid" id="color-picker">
+<!-- Colors generated dynamically -->
+</div>
+</div>
+​<div class="form-group">
+<label class="form-label">Prévia</label>
+<div class="card" id="subject-preview" style="margin-bottom: 0;">
+<h3 id="preview-name">Nome da disciplina</h3>
+</div>
+</div>
+​<button class="btn btn-primary" id="save-subject-btn" onclick="app.saveSubject()">Criar disciplina</button>
+</div>
+​<!-- ==========================================================================
+VIEW 7: SUBJECT DETAILS & CONTENTS LIST
+========================================================================== -->
+<div id="view-subject-detail" class="view-container">
+<div class="header-nav">
+<button class="icon-btn" onclick="app.navigateTo('view-subjects')">←</button>
+<div class="title" id="subject-detail-title">Disciplina</div>
+<button class="icon-btn" onclick="app.openSubjectMenu()">⋮</button>
+</div>
+​<!-- Subject Progress Banner -->
+<div class="card" id="subject-detail-card">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<span id="subject-detail-count" style="font-size: 13px; font-weight: 700; color: var(--text-muted);">0 conteúdos</span>
+<span id="subject-detail-percentage" style="font-size: 16px; font-weight: 800; color: var(--primary-dark);">0%</span>
+</div>
+<div class="progress-bar-container">
+<div id="subject-detail-bar" class="progress-bar-fill" style="width: 0%;"></div>
+</div>
+</div>
+​<button class="btn btn-secondary" style="margin-bottom: 20px;" onclick="app.openAddContentModal()">+ Adicionar conteúdo</button>
+​<div id="contents-list">
+<!-- Content Items dynamically populated -->
+</div>
+</div>
+​<!-- ==========================================================================
+VIEW 9: CONTENT DETAILS
+========================================================================== -->
+<div id="view-content-detail" class="view-container">
+<div class="header-nav">
+<button class="icon-btn" onclick="app.goBack()">←</button>
+<div class="title">Detalhes do conteúdo</div>
+<button class="icon-btn" onclick="app.openContentMenu()">⋮</button>
+</div>
+​<div style="margin-bottom: 20px;">
+<span id="content-subject-badge" class="badge">Disciplina</span>
+<h2 id="content-detail-title" style="margin-top: 6px; font-size: 22px;">Nome do Conteúdo</h2>
+</div>
+​<!-- Progress Card -->
+<div class="card">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+<span style="font-size: 13px; font-weight: 700; color: var(--text-muted);">Progresso</span>
+<span id="content-detail-percentage" style="font-size: 18px; font-weight: 800; color: var(--primary);">0%</span>
+</div>
+<div class="progress-bar-container">
+<div id="content-detail-bar" class="progress-bar-fill" style="width: 0%;"></div>
+</div>
+<div id="content-completion-banner" class="completion-banner">
+🎉 Conteúdo concluído! Excelente progresso!
+</div>
+</div>
+​<h3 style="margin-bottom: 12px; margin-top: 24px;">Etapas de estudo</h3>
+​<div id="steps-container">
+<div class="step-item" id="step-0" onclick="app.toggleStep(0)">
+<div class="custom-checkbox"></div>
+<div class="step-text">Vi o conteúdo</div>
+</div>
+<div class="step-item" id="step-1" onclick="app.toggleStep(1)">
+<div class="custom-checkbox"></div>
+<div class="step-text">Fiz a revisão</div>
+</div>
+<div class="step-item" id="step-2" onclick="app.toggleStep(2)">
+<div class="custom-checkbox"></div>
+<div class="step-text">Resolvi questões</div>
+</div>
+</div>
+</div>
+​<!-- ==========================================================================
+VIEW 11: PROGRESS OVERVIEW
+========================================================================== -->
+<div id="view-progress" class="view-container">
+<div class="header-nav">
+<div class="title">Meu progresso</div>
+</div>
+​<div class="card" style="text-align: center; padding: 24px;">
+<span style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Progresso Geral</span>
+<div id="progress-view-percentage" style="font-size: 42px; font-weight: 800; color: var(--primary); margin: 8px 0;">0%</div>
+<div class="progress-bar-container">
+<div id="progress-view-bar" class="progress-bar-fill" style="width: 0%;"></div>
+</div>
+</div>
+​<h3 style="margin: 20px 0 12px 0;">Seus números</h3>
+​<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px;">
+<div class="card" style="margin-bottom: 0; text-align: center;">
+<div id="prog-stat-total" style="font-size: 24px; font-weight: 800;">0</div>
+<div style="font-size: 12px; color: var(--text-muted);">Conteúdos</div>
+</div>
+<div class="card" style="margin-bottom: 0; text-align: center;">
+<div id="prog-stat-completed" style="font-size: 24px; font-weight: 800; color: #2E7D32;">0</div>
+<div style="font-size: 12px; color: var(--text-muted);">Concluídos</div>
+</div>
+<div class="card" style="margin-bottom: 0; text-align: center;">
+<div id="prog-stat-in-progress" style="font-size: 24px; font-weight: 800; color: #EF6C00;">0</div>
+<div style="font-size: 12px; color: var(--text-muted);">Em andamento</div>
+</div>
+<div class="card" style="margin-bottom: 0; text-align: center;">
+<div id="prog-stat-not-started" style="font-size: 24px; font-weight: 800; color: var(--text-light);">0</div>
+<div style="font-size: 12px; color: var(--text-muted);">Não iniciados</div>
+</div>
+</div>
+​<h3 style="margin-bottom: 12px;">Desempenho por Disciplina</h3>
+<div id="progress-subjects-list"></div>
+</div>
+​<!-- ==========================================================================
+VIEW 12: SEARCH
+========================================================================== -->
+<div id="view-search" class="view-container">
+<div class="header-nav">
+<div class="title">Busca</div>
+</div>
+​<div class="search-box">
+<span class="search-icon">🔍</span>
+<input type="text" id="search-input" class="form-input" placeholder="Buscar disciplina ou conteúdo..." oninput="app.handleSearch()">
+</div>
+​<div id="search-results">
+<!-- Search results rendered dynamically -->
+</div>
+</div>
+​<!-- ==========================================================================
+VIEW 13: SETTINGS
+========================================================================== -->
+<div id="view-settings" class="view-container">
+<div class="header-nav">
+<div class="title">Configurações</div>
+</div>
+​<div class="card" onclick="app.openEditGoalModal()" style="cursor: pointer;">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<div>
+<h3>Meu Objetivo</h3>
+<p id="settings-goal-name">Carregando...</p>
+</div>
+<span>✏️</span>
+</div>
+</div>
+​<div class="card" onclick="app.openEditNameModal()" style="cursor: pointer;">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<div>
+<h3>Meu Nome</h3>
+<p id="settings-user-name">Opcional</p>
+</div>
+<span>✏️</span>
+</div>
+</div>
+​<div class="card">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<div>
+<h3>Aparência</h3>
+<p>Modo Escuro</p>
+</div>
+<input type="checkbox" id="dark-mode-toggle" onchange="app.toggleDarkMode(this.checked)" style="width: 20px; height: 20px;">
+</div>
+</div>
+​<div class="card" onclick="app.confirmResetData()" style="cursor: pointer; border-color: #FFCDD2;">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<div>
+<h3 style="color: #D32F2F;">Limpar Dados</h3>
+<p>Apagar todo o progresso do aplicativo</p>
+</div>
+<span>🗑️</span>
+</div>
+</div>
+​<div style="text-align: center; margin-top: 40px;">
+<div class="notebook-icon" style="transform: scale(0.6); margin-bottom: 0;">
+<div class="bookmark"></div>
+</div>
+<p style="font-weight: 700; color: var(--text-main);">Mycontent</p>
+<p style="font-size: 12px;">Versão 1.0.0 — Caderninho Inteligente</p>
+</div>
+</div>
+​<!-- ==========================================================================
+MODALS & BOTTOM SHEETS
+========================================================================== -->
+​<!-- Add Content Modal -->
+<div id="modal-add-content" class="modal-overlay">
+<div class="modal-card">
+<div class="modal-header">
+<h2>Novo conteúdo</h2>
+<button class="icon-btn" onclick="app.closeModals()">✕</button>
+</div>
+<div class="form-group">
+<label class="form-label">Nome do conteúdo</label>
+<input type="text" id="content-name-input" class="form-input" placeholder="Ex: Sinais de trânsito">
+</div>
+<button class="btn btn-primary" onclick="app.saveContent()">Adicionar conteúdo</button>
+</div>
+</div>
+​<!-- Subject Options Menu Modal -->
+<div id="modal-subject-menu" class="modal-overlay">
+<div class="modal-card">
+<div class="modal-header">
+<h2>Opções da Disciplina</h2>
+<button class="icon-btn" onclick="app.closeModals()">✕</button>
+</div>
+<button class="btn btn-outline" style="margin-bottom: 10px;" onclick="app.editCurrentSubject()">Editar disciplina</button>
+<button class="btn btn-danger" onclick="app.confirmDeleteSubject()">Excluir disciplina</button>
+</div>
+</div>
+​<!-- Content Options Menu Modal -->
+<div id="modal-content-menu" class="modal-overlay">
+<div class="modal-card">
+<div class="modal-header">
+<h2>Opções do Conteúdo</h2>
+<button class="icon-btn" onclick="app.closeModals()">✕</button>
+</div>
+<button class="btn btn-outline" style="margin-bottom: 10px;" onclick="app.editCurrentContent()">Editar conteúdo</button>
+<button class="btn btn-danger" onclick="app.confirmDeleteContent()">Excluir conteúdo</button>
+</div>
+</div>
+​<!-- Edit Goal Modal -->
+<div id="modal-edit-goal" class="modal-overlay">
+<div class="modal-card">
+<div class="modal-header">
+<h2>Editar Objetivo</h2>
+<button class="icon-btn" onclick="app.closeModals()">✕</button>
+</div>
+<div class="form-group">
+<label class="form-label">Nome do objetivo</label>
+<input type="text" id="edit-goal-input" class="form-input">
+</div>
+<button class="btn btn-primary" onclick="app.updateGoal()">Salvar</button>
+</div>
+</div>
+​<!-- Edit User Name Modal -->
+<div id="modal-edit-name" class="modal-overlay">
+<div class="modal-card">
+<div class="modal-header">
+<h2>Seu Nome</h2>
+<button class="icon-btn" onclick="app.closeModals()">✕</button>
+</div>
+<div class="form-group">
+<label class="form-label">Como deseja ser chamado?</label>
+<input type="text" id="edit-name-input" class="form-input" placeholder="Seu nome">
+</div>
+<button class="btn btn-primary" onclick="app.updateUserName()">Salvar</button>
+</div>
+</div>
+​<!-- Confirmation Modal -->
+<div id="modal-confirm" class="modal-overlay">
+<div class="modal-card">
+<h2 id="confirm-title" style="margin-bottom: 8px;">Confirmação</h2>
+<p id="confirm-message" style="margin-bottom: 20px;">Tem certeza que deseja realizar esta ação?</p>
+<div style="display: flex; gap: 10px;">
+<button class="btn btn-outline" onclick="app.closeModals()">Cancelar</button>
+<button class="btn btn-danger" id="confirm-action-btn">Excluir</button>
+</div>
+</div>
+</div>
+​<!-- ==========================================================================
+BOTTOM NAVIGATION BAR
+========================================================================== -->
+<nav id="bottom-nav">
+<a class="nav-item active" id="nav-home" onclick="app.navigateTo('view-home')">
+<svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+<span>Início</span>
+</a>
+<a class="nav-item" id="nav-subjects" onclick="app.navigateTo('view-subjects')">
+<svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+<span>Disciplinas</span>
+</a>
+<a class="nav-item" id="nav-progress" onclick="app.navigateTo('view-progress')">
+<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+<span>Progresso</span>
+</a>
+<a class="nav-item" id="nav-search" onclick="app.navigateTo('view-search')">
+<svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+<span>Busca</span>
+</a>
+<a class="nav-item" id="nav-settings" onclick="app.navigateTo('view-settings')">
+<svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+<span>Ajustes</span>
+</a>
+</nav>
+​</div>
+​<!-- ==========================================================================
+APPLICATION LOGIC (JAVASCRIPT)
+========================================================================== -->
+<script>
+const PASTEL_COLORS = [
+{ id: 'color-lilas', name: 'Lilás', hex: '#D8C7F0' },
+{ id: 'color-pink', name: 'Rosa pastel', hex: '#F8BBD0' },
+{ id: 'color-blue', name: 'Azul pastel', hex: '#B3E5FC' },
+{ id: 'color-sage', name: 'Verde sálvia', hex: '#C8E6C9' },
+{ id: 'color-peach', name: 'Pêssego', hex: '#FFE0B2' },
+{ id: 'color-butter', name: 'Amarelo manteiga', hex: '#FFF9C4' },
+{ id: 'color-coral', name: 'Coral suave', hex: '#FFCCBC' },
+{ id: 'color-beige', name: 'Bege', hex: '#E1D5C9' },
+{ id: 'color-slate', name: 'Azul acinzentado', hex: '#CFD8DC' }
+];
+​class MycontentApp {
+constructor() {
+this.data = {
+goal: '',
+userName: '',
+darkMode: false,
+subjects: [],
+contents: []
+};
+​this.currentView = 'view-splash';
+this.history = [];
+this.selectedSubjectId = null;
+this.selectedContentId = null;
+this.editingSubjectId = null;
+this.editingContentId = null;
+this.selectedColorClass = 'color-lilas';
+​this.init();
+}
+​init() {
+this.loadData();
+this.setupColorPicker();
+​// Splash Screen Delay
+setTimeout(() => {
+if (!this.data.goal) {
+this.navigateTo('view-welcome', false);
+} else {
+this.navigateTo('view-home', false);
+}
+}, 1500);
+​if (this.data.darkMode) {
+document.body.setAttribute('data-theme', 'dark');
+const toggle = document.getElementById('dark-mode-toggle');
+if(toggle) toggle.checked = true;
+}
+}
+​// LocalStorage Management
+loadData() {
+const saved = localStorage.getItem('mycontent_db');
+if (saved) {
+try {
+this.data = JSON.parse(saved);
+} catch (e) {
+console.error('Failed to parse local data', e);
+}
+}
+}
+​saveData() {
+localStorage.setItem('mycontent_db', JSON.stringify(this.data));
+}
+​// Navigation Core
+navigateTo(viewId, pushToHistory = true) {
+if (pushToHistory && this.currentView !== viewId) {
+this.history.push(this.currentView);
+}
+​document.querySelectorAll('.view-container').forEach(el => {
+el.classList.remove('active');
+});
+​const targetView = document.getElementById(viewId);
+if (targetView) {
+targetView.classList.add('active');
+this.currentView = viewId;
+}
+​// Toggle Bottom Nav visibility
+const hideNavOn = ['view-splash', 'view-welcome', 'view-create-goal', 'view-create-subject'];
+const bottomNav = document.getElementById('bottom-nav');
+if (hideNavOn.includes(viewId)) {
+bottomNav.style.display = 'none';
+} else {
+bottomNav.style.display = 'flex';
+}
+​// Active Bottom Nav Styling
+document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+if (viewId === 'view-home') document.getElementById('nav-home')?.classList.add('active');
+if (viewId === 'view-subjects' || viewId === 'view-subject-detail') document.getElementById('nav-subjects')?.classList.add('active');
+if (viewId === 'view-progress') document.getElementById('nav-progress')?.classList.add('active');
+if (viewId === 'view-search') document.getElementById('nav-search')?.classList.add('active');
+if (viewId === 'view-settings') document.getElementById('nav-settings')?.classList.add('active');
+​// Refresh dynamic view contents
+this.renderView(viewId);
+}
+​goBack() {
+if (this.history.length > 0) {
+const prev = this.history.pop();
+this.navigateTo(prev, false);
+} else {
+this.navigateTo('view-home', false);
+}
+}
+​renderView(viewId) {
+switch (viewId) {
+case 'view-home':
+this.renderHome();
+break;
+case 'view-subjects':
+this.renderSubjectsList();
+break;
+case 'view-subject-detail':
+this.renderSubjectDetail();
+break;
+case 'view-content-detail':
+this.renderContentDetail();
+break;
+case 'view-progress':
+this.renderProgressView();
+break;
+case 'view-settings':
+this.renderSettingsView();
+break;
+}
+}
+​// Calculation Functions
+getContentProgress(content) {
+if (!content || !content.steps) return 0;
+const completed = content.steps.filter(Boolean).length;
+if (completed === 0) return 0;
+if (completed === 1) return 33;
+if (completed === 2) return 66;
+return 100;
+}
+​getSubjectProgress(subjectId) {
+const contents = this.data.contents.filter(c => c.subjectId === subjectId);
+if (contents.length === 0) return 0;
+const sum = contents.reduce((acc, curr) => acc + this.getContentProgress(curr), 0);
+return Math.round(sum / contents.length);
+}
+​getOverallProgress() {
+if (this.data.contents.length === 0) return 0;
+const sum = this.data.contents.reduce((acc, curr) => acc + this.getContentProgress(curr), 0);
+return Math.round(sum / this.data.contents.length);
+}
+​// Rendering Methods
+renderHome() {
+document.getElementById('home-goal-name').innerText = '🎯 ' + (this.data.goal || 'Meu Objetivo');
+​const overall = this.getOverallProgress();
+document.getElementById('home-overall-percentage').innerText = ${overall}%;
+document.getElementById('home-overall-bar').style.width = ${overall}%;
+​// Stats
+const total = this.data.contents.length;
+const completed = this.data.contents.filter(c => this.getContentProgress(c) === 100).length;
+const inProgress = this.data.contents.filter(c => {
+const p = this.getContentProgress(c);
+return p > 0 && p < 100;
+}).length;
+​document.getElementById('stat-total').innerText = total;
+document.getElementById('stat-completed').innerText = completed;
+document.getElementById('stat-in-progress').innerText = inProgress;
+​// Subjects List Render
+const container = document.getElementById('home-subjects-list');
+container.innerHTML = '';
+​if (this.data.subjects.length === 0) {
+container.innerHTML = <div class="empty-state"> <div class="notebook-icon"><div class="bookmark"></div></div> <h3>Seu caderninho está esperando por você.</h3> <p style="margin-top: 6px;">Adicione sua primeira disciplina e comece a organizar seus estudos.</p> </div>;
+return;
+}
+​this.data.subjects.forEach(subject => {
+const subjectContents = this.data.contents.filter(c => c.subjectId === subject.id);
+const progress = this.getSubjectProgress(subject.id);
+​const card = document.createElement('div');
+card.className = card ${subject.colorClass};
+card.onclick = () => {
+this.selectedSubjectId = subject.id;
+this.navigateTo('view-subject-detail');
+};
+​card.innerHTML = <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;"> <h3 style="color: var(--subject-color-dark);">${subject.name}</h3> <span style="font-size: 12px; font-weight: 800; color: var(--subject-color-dark);">${progress}%</span> </div> <p style="font-size: 12px; margin-bottom: 8px;">${subjectContents.length} conteúdos</p> <div class="progress-bar-container" style="background: var(--subject-color-bg);"> <div class="progress-bar-fill" style="width: ${progress}%; background: var(--subject-color-dark);"></div> </div>;
+container.appendChild(card);
+});
+}
+​renderSubjectsList() {
+const container = document.getElementById('all-subjects-list');
+container.innerHTML = '';
+​if (this.data.subjects.length === 0) {
+container.innerHTML = <div class="empty-state"> <div class="notebook-icon"><div class="bookmark"></div></div> <h3>Nenhuma disciplina encontrada</h3> <button class="btn btn-primary" style="margin-top: 16px;" onclick="app.navigateTo('view-create-subject')">+ Criar Disciplina</button> </div>;
+return;
+}
+​this.data.subjects.forEach(subject => {
+const subjectContents = this.data.contents.filter(c => c.subjectId === subject.id);
+const progress = this.getSubjectProgress(subject.id);
+​const card = document.createElement('div');
+card.className = card ${subject.colorClass};
+card.onclick = () => {
+this.selectedSubjectId = subject.id;
+this.navigateTo('view-subject-detail');
+};
+​card.innerHTML = <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;"> <h3 style="color: var(--subject-color-dark);">${subject.name}</h3> <span style="font-size: 14px; font-weight: 800; color: var(--subject-color-dark);">${progress}%</span> </div> <p style="font-size: 12px; margin-bottom: 8px;">${subjectContents.length} conteúdos cadastrados</p> <div class="progress-bar-container" style="background: var(--subject-color-bg);"> <div class="progress-bar-fill" style="width: ${progress}%; background: var(--subject-color-dark);"></div> </div>;
+container.appendChild(card);
+});
+}
+​renderSubjectDetail() {
+const subject = this.data.subjects.find(s => s.id === this.selectedSubjectId);
+if (!subject) {
+this.navigateTo('view-subjects');
+return;
+}
+​document.getElementById('subject-detail-title').innerText = subject.name;
+​const contents = this.data.contents.filter(c => c.subjectId === subject.id);
+const progress = this.getSubjectProgress(subject.id);
+​document.getElementById('subject-detail-count').innerText = ${contents.length} conteúdos;
+document.getElementById('subject-detail-percentage').innerText = ${progress}%;
+​const card = document.getElementById('subject-detail-card');
+card.className = card ${subject.colorClass};
+​const bar = document.getElementById('subject-detail-bar');
+bar.style.width = ${progress}%;
+bar.style.background = 'var(--subject-color-dark)';
+​const container = document.getElementById('contents-list');
+container.innerHTML = '';
+​if (contents.length === 0) {
+container.innerHTML = <div class="empty-state"> <p>Nenhum conteúdo ainda.</p> <p style="font-size: 12px; margin-top: 4px;">Adicione os conteúdos que você precisa estudar.</p> </div>;
+return;
+}
+​contents.forEach(content => {
+const contentProgress = this.getContentProgress(content);
+const item = document.createElement('div');
+item.className = 'card';
+item.onclick = () => {
+this.selectedContentId = content.id;
+this.navigateTo('view-content-detail');
+};
+​item.innerHTML = <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;"> <h3 style="font-size: 15px;">${content.name}</h3> <span style="font-size: 12px; font-weight: 800; color: var(--primary);">${contentProgress}%</span> </div> <div class="progress-bar-container"> <div class="progress-bar-fill" style="width: ${contentProgress}%;"></div> </div> <div style="display: flex; gap: 12px; margin-top: 10px; font-size: 12px; color: var(--text-muted);"> <span>${content.steps[0] ? '✓' : '☐'} Viu</span> <span>${content.steps[1] ? '✓' : '☐'} Revisou</span> <span>${content.steps[2] ? '✓' : '☐'} Questões</span> </div>;
+container.appendChild(item);
+});
+}
+​renderContentDetail() {
+const content = this.data.contents.find(c => c.id === this.selectedContentId);
+if (!content) {
+this.goBack();
+return;
+}
+​const subject = this.data.subjects.find(s => s.id === content.subjectId);
+​document.getElementById('content-detail-title').innerText = content.name;
+​const badge = document.getElementById('content-subject-badge');
+badge.innerText = subject ? subject.name : 'Disciplina';
+if (subject) {
+badge.className = badge ${subject.colorClass};
+badge.style.color = 'var(--subject-color-dark)';
+badge.style.background = 'var(--subject-color-bg)';
+}
+​const progress = this.getContentProgress(content);
+document.getElementById('content-detail-percentage').innerText = ${progress}%;
+document.getElementById('content-detail-bar').style.width = ${progress}%;
+​// Completion Banner
+const banner = document.getElementById('content-completion-banner');
+if (progress === 100) {
+banner.classList.add('active');
+} else {
+banner.classList.remove('active');
+}
+​// Update Steps Checks UI
+for (let i = 0; i < 3; i++) {
+const stepEl = document.getElementById(step-${i});
+if (content.steps[i]) {
+stepEl.classList.add('checked');
+} else {
+stepEl.classList.remove('checked');
+}
+}
+}
+​renderProgressView() {
+const overall = this.getOverallProgress();
+document.getElementById('progress-view-percentage').innerText = ${overall}%;
+document.getElementById('progress-view-bar').style.width = ${overall}%;
+​const total = this.data.contents.length;
+const completed = this.data.contents.filter(c => this.getContentProgress(c) === 100).length;
+const inProgress = this.data.contents.filter(c => {
+const p = this.getContentProgress(c);
+return p > 0 && p < 100;
+}).length;
+const notStarted = this.data.contents.filter(c => this.getContentProgress(c) === 0).length;
+​document.getElementById('prog-stat-total').innerText = total;
+document.getElementById('prog-stat-completed').innerText = completed;
+document.getElementById('prog-stat-in-progress').innerText = inProgress;
+document.getElementById('prog-stat-not-started').innerText = notStarted;
+​// Render Subjects Performance List
+const container = document.getElementById('progress-subjects-list');
+container.innerHTML = '';
+​if (this.data.subjects.length === 0) {
+container.innerHTML = '<p style="text-align: center; font-size: 13px;">Nenhuma disciplina cadastrada.</p>';
+return;
+}
+​this.data.subjects.forEach(subject => {
+const progress = this.getSubjectProgress(subject.id);
+const item = document.createElement('div');
+item.className = card ${subject.colorClass};
+item.innerHTML = <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;"> <h3 style="font-size: 14px; color: var(--subject-color-dark);">${subject.name}</h3> <span style="font-size: 13px; font-weight: 800; color: var(--subject-color-dark);">${progress}%</span> </div> <div class="progress-bar-container" style="background: var(--subject-color-bg);"> <div class="progress-bar-fill" style="width: ${progress}%; background: var(--subject-color-dark);"></div> </div>;
+container.appendChild(item);
+});
+}
+​renderSettingsView() {
+document.getElementById('settings-goal-name').innerText = this.data.goal || 'Não definido';
+document.getElementById('settings-user-name').innerText = this.data.userName || 'Opcional';
+}
+​handleSearch() {
+const query = document.getElementById('search-input').value.toLowerCase().trim();
+const container = document.getElementById('search-results');
+container.innerHTML = '';
+​if (!query) return;
+​// Search contents
+const matchedContents = this.data.contents.filter(c => c.name.toLowerCase().includes(query));
+​if (matchedContents.length === 0) {
+container.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 20px;">Nenhum resultado encontrado.</p>';
+return;
+}
+​matchedContents.forEach(content => {
+const subject = this.data.subjects.find(s => s.id === content.subjectId);
+const progress = this.getContentProgress(content);
+​const card = document.createElement('div');
+card.className = 'card';
+card.onclick = () => {
+this.selectedContentId = content.id;
+this.navigateTo('view-content-detail');
+};
+​card.innerHTML = <div style="font-size: 11px; font-weight: 700; color: var(--primary); margin-bottom: 2px;"> ${subject ? subject.name : 'Disciplina'} </div> <div style="display: flex; justify-content: space-between; align-items: center;"> <h3 style="font-size: 15px;">${content.name}</h3> <span style="font-size: 13px; font-weight: 800;">${progress}%</span> </div>;
+container.appendChild(card);
+});
+}
+​// Actions & Mutators
+saveGoal() {
+const val = document.getElementById('goal-input').value.trim();
+if (val) {
+this.data.goal = val;
+this.saveData();
+this.navigateTo('view-home');
+}
+}
+​setupColorPicker() {
+const container = document.getElementById('color-picker');
+if (!container) return;
+container.innerHTML = '';
+​PASTEL_COLORS.forEach((color, idx) => {
+const opt = document.createElement('div');
+opt.className = color-option ${color.id} ${idx === 0 ? 'selected' : ''};
+opt.style.background = color.hex;
+opt.onclick = () => {
+document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
+opt.classList.add('selected');
+this.selectedColorClass = color.id;
+​// Update preview
+const preview = document.getElementById('subject-preview');
+preview.className = card ${color.id};
+};
+​container.appendChild(opt);
+});
+}
+​saveSubject() {
+const name = document.getElementById('subject-name-input').value.trim();
+if (!name) return;
+​if (this.editingSubjectId) {
+// Edit existing
+const subject = this.data.subjects.find(s => s.id === this.editingSubjectId);
+if (subject) {
+subject.name = name;
+subject.colorClass = this.selectedColorClass;
+}
+this.editingSubjectId = null;
+} else {
+// Create new
+const newSubject = {
+id: 'sub_' + Date.now(),
+name: name,
+colorClass: this.selectedColorClass
+};
+this.data.subjects.push(newSubject);
+}
+​this.saveData();
+document.getElementById('subject-name-input').value = '';
+this.navigateTo('view-subjects');
+}
+​saveContent() {
+const name = document.getElementById('content-name-input').value.trim();
+if (!name || !this.selectedSubjectId) return;
+​const newContent = {
+id: 'cnt_' + Date.now(),
+subjectId: this.selectedSubjectId,
+name: name,
+steps: [false, false, false]
+};
+​this.data.contents.push(newContent);
+this.saveData();
+​document.getElementById('content-name-input').value = '';
+this.closeModals();
+this.renderSubjectDetail();
+}
+​toggleStep(index) {
+const content = this.data.contents.find(c => c.id === this.selectedContentId);
+if (content) {
+content.steps[index] = !content.steps[index];
+this.saveData();
+this.renderContentDetail();
+}
+}
+​// Modals Logic
+openAddContentModal() {
+document.getElementById('modal-add-content').classList.add('active');
+}
+​openSubjectMenu() {
+document.getElementById('modal-subject-menu').classList.add('active');
+}
+​openContentMenu() {
+document.getElementById('modal-content-menu').classList.add('active');
+}
+​openEditGoalModal() {
+document.getElementById('edit-goal-input').value = this.data.goal || '';
+document.getElementById('modal-edit-goal').classList.add('active');
+}
+​updateGoal() {
+const val = document.getElementById('edit-goal-input').value.trim();
+if (val) {
+this.data.goal = val;
+this.saveData();
+this.closeModals();
+this.renderView(this.currentView);
+}
+}
+​openEditNameModal() {
+document.getElementById('edit-name-input').value = this.data.userName || '';
+document.getElementById('modal-edit-name').classList.add('active');
+}
+​updateUserName() {
+const val = document.getElementById('edit-name-input').value.trim();
+this.data.userName = val;
+this.saveData();
+this.closeModals();
+this.renderSettingsView();
+}
+​editCurrentSubject() {
+this.closeModals();
+const subject = this.data.subjects.find(s => s.id === this.selectedSubjectId);
+if (subject) {
+this.editingSubjectId = subject.id;
+document.getElementById('subject-form-title').innerText = 'Editar disciplina';
+document.getElementById('subject-name-input').value = subject.name;
+document.getElementById('save-subject-btn').innerText = 'Salvar alterações';
+​this.selectedColorClass = subject.colorClass;
+this.navigateTo('view-create-subject');
+}
+}
+​confirmDeleteSubject() {
+this.closeModals();
+const modal = document.getElementById('modal-confirm');
+document.getElementById('confirm-title').innerText = 'Excluir disciplina?';
+document.getElementById('confirm-message').innerText = 'Todos os conteúdos dessa disciplina também serão excluídos permanentemente.';
+​const actionBtn = document.getElementById('confirm-action-btn');
+actionBtn.onclick = () => {
+this.data.subjects = this.data.subjects.filter(s => s.id !== this.selectedSubjectId);
+this.data.contents = this.data.contents.filter(c => c.subjectId !== this.selectedSubjectId);
+this.saveData();
+this.closeModals();
+this.navigateTo('view-subjects');
+};
+​modal.classList.add('active');
+}
+​editCurrentContent() {
+this.closeModals();
+const content = this.data.contents.find(c => c.id === this.selectedContentId);
+if (content) {
+const newName = prompt('Editar nome do conteúdo:', content.name);
+if (newName && newName.trim()) {
+content.name = newName.trim();
+this.saveData();
+this.renderContentDetail();
+}
+}
+}
+​confirmDeleteContent() {
+this.closeModals();
+const modal = document.getElementById('modal-confirm');
+document.getElementById('confirm-title').innerText = 'Excluir conteúdo?';
+document.getElementById('confirm-message').innerText = 'Este conteúdo será apagado permanentemente.';
+​const actionBtn = document.getElementById('confirm-action-btn');
+actionBtn.onclick = () => {
+this.data.contents = this.data.contents.filter(c => c.id !== this.selectedContentId);
+this.saveData();
+this.closeModals();
+this.navigateTo('view-subject-detail');
+};
+​modal.classList.add('active');
+}
+​confirmResetData() {
+const modal = document.getElementById('modal-confirm');
+document.getElementById('confirm-title').innerText = 'Limpar todos os dados?';
+document.getElementById('confirm-message').innerText = 'Ação irreversível. Seu objetivo, disciplinas e progresso serão apagados.';
+​const actionBtn = document.getElementById('confirm-action-btn');
+actionBtn.onclick = () => {
+localStorage.removeItem('mycontent_db');
+location.reload();
+};
+​modal.classList.add('active');
+}
+​toggleDarkMode(enabled) {
+this.data.darkMode = enabled;
+if (enabled) {
+document.body.setAttribute('data-theme', 'dark');
+} else {
+document.body.removeAttribute('data-theme');
+}
+this.saveData();
+}
+​closeModals() {
+document.querySelectorAll('.modal-overlay').forEach(el => el.classList.remove('active'));
+}
+}
+​// Initialize App
+const app = new MycontentApp();
+</script>
+</body>
+</html>
